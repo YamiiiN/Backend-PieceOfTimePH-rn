@@ -15,11 +15,7 @@ cloudinary.v2.config({
 
 
 
-
-
 dbConnect();
-
-
 
 
 app.listen(process.env.PORT, () => {
