@@ -1,5 +1,6 @@
 const Product = require('../models/Product');
 const cloudinary = require('cloudinary');
+const mongoose = require('mongoose');
 
 // CREATE PRODUCT
 exports.create = async (req, res, next) => {
@@ -38,18 +39,19 @@ exports.create = async (req, res, next) => {
 
     } catch (error) {
 
-        res.json({
-            message: ""
-        })
-        console.log(error);
+        console.log(error)
 
+        return res.json({
+            message: 'System error occured.',
+            success: false,
+        })
     }
 
 }
 
 
 // UPDATE PRODUCT
-exports.update = async (req, res, next) => {
+exports.updateProduct = async (req, res, next) => {
 
     try {
 
@@ -94,54 +96,52 @@ exports.update = async (req, res, next) => {
 
         console.log(error);
 
+        return res.json({
+            message: 'System error occured.',
+            success: false,
+        })
+
+
     }
 
 }
 
 
 // GET SINGLE PRODUCT BY ID
-exports.getSingle = async (req, res, next) => {
-
+exports.getSingleProduct = async (req, res, next) => {
     try {
+        const { id } = req.params;
 
-        // .populate (aggregate join tables)
-        const product = await Product.findById(req.params.id).populate({
-            path: 'category',
-            model: 'Category',
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid Product ID" });
+        }
+
+        const product = await Product.findById(id);
+
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        res.json({
+            message: "Single product retrieved!",
+            product,
         });
-
-        return res.json({
-            message: "Single product retrieved successfully.",
-            product: product,
-        })
-
     } catch (error) {
-
         console.log(error);
-
-        return res.json({
-            message: 'System error occured.',
-            success: false,
-        })
-
+        return res.status(500).json({ message: "System error occurred", success: false });
     }
-
-}
+};
 
 
 // GET ALL PRODUCTS
-exports.all = async (req, res, next) => {
+exports.getAllProducts = async (req, res, next) => {
 
     try {
 
-        // .populate (aggregate join tables)
-        const products = await Product.find().populate({
-            path: 'category',
-            model: 'Category',
-        });
+        const products = await Product.find();
 
-        return res.json({
-            message: "All available products retrieved successfully.",
+        res.json({
+            message: "Products retrieved.",
             products: products,
         })
 
@@ -154,10 +154,10 @@ exports.all = async (req, res, next) => {
             success: false,
         })
 
+
     }
 
 }
-
 
 
 // DELETE PRODUCT
@@ -168,22 +168,22 @@ exports.deleteProduct = async (req, res, next) => {
         await Product.findByIdAndDelete(req.params.id)
 
         res.json({
-            message: "Product deleted successfully!",
+            message: "Product deleted successfully."
         })
 
     } catch (error) {
 
-        console.log(error);
+        console.log(error)
 
         return res.json({
             message: 'System error occured.',
             success: false,
         })
 
+
     }
 
 }
-
 
 
 // BULK DELETE

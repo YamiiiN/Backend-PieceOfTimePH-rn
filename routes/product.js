@@ -3,17 +3,17 @@ const router = express.Router();
 const upload = require('../utils/multer')
 
 
-const { create, update, getSingle, deleteProduct, all } = require('../controllers/product')
+const { create, getAllProducts, getSingleProduct, updateProduct, deleteProduct } = require('../controllers/product')
 
 
 
 router.post('/create', upload.array('images'), create)
 
-router.get('/:id', getSingle)
+router.get('/:id', getSingleProduct)
 
-router.get('/get/all', all)
+router.get('/get/all', getAllProducts)
 
-router.put('/update/:id', upload.array('images'), update)
+router.put('/update/:id', upload.array('images'), updateProduct)
 
 router.delete('/delete/:id', deleteProduct)
 
