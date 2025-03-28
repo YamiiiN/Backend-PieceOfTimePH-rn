@@ -185,6 +185,51 @@ exports.deleteProduct = async (req, res, next) => {
 
 }
 
+// GET ALL PRODUCTS IN A CATEGORY
+exports.getProductsByCategory = async (req, res, next) => {
+    try {
+        const { category } = req.params;
+        const products = await Product.find({ category });
+
+        if (!products.length) return res.status(404).json({ message: "No products found in this category." });
+        
+        res.json({ message: "Products retrieved.", products });
+    } catch (error) {
+        console.log(error);
+        return res.json({ message: 'System error occurred.', success: false });
+    }
+};
+
+// GET ONE PRODUCT PER CATEGORY WITH FIRST IMAGE
+exports.getOneProductPerCategory = async (req, res, next) => {
+    try {
+        const categories = await Product.distinct("category");
+
+        const products = await Promise.all(
+            categories.map(async (category) => {
+                const product = await Product.findOne({ category }).select("name category images");
+                return product ? { 
+                    category: category, 
+                    product: product, 
+                    firstImage: product.images.length > 0 ? product.images[0].url : null 
+                } : null;
+            })
+        );
+
+        res.json({
+            message: "One product per category retrieved successfully.",
+            products: products.filter(Boolean), 
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "System error occurred.",
+            success: false,
+        });
+    }
+};
+
 
 // BULK DELETE
 // exports.bulkDelete = async (req, res, next) => {
