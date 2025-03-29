@@ -26,11 +26,7 @@ const isAuthenticatedV2 = async (req, res, next) => {
     } catch (error) {
         res.status(401).json({ message: 'Invalid or expired token' });
     }
-
-
-
 }
-
 
 // JWT TOKEN AUTH
 const isAuthenticated = async (req, res, next) => {
@@ -57,10 +53,7 @@ const isAuthenticated = async (req, res, next) => {
     // console.log(req.user);
 
     next()
-
 }
-
-
 
 // AUTHORIZATION MIDDLEWARE
 const authorizeRoles = (...roles) => {

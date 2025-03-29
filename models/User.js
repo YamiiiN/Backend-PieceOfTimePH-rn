@@ -60,7 +60,7 @@ userModel.pre('save', async function (next) {
 });
 
 userModel.methods.getJwtToken = function () {
-    return jwt.sign({ id: this.id }, process.env.JWT_SECRET, {
+    return jwt.sign({ id: this.id, role: this.role }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_TIME
     });
 }
