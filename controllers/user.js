@@ -1,16 +1,16 @@
 const User = require('../models/User');
 const cloudinary = require('cloudinary');
 const { sendToken } = require('../utils/jwtToken');
-
-exports.saveToken =  async (req, res, next) => {
+const admin = require('../utils/firebase');
+exports.saveToken = async (req, res, next) => {
 
     try {
 
-       const user = await User.findById(req.user._id);
+        const user = await User.findById(req.user._id);
 
-       user.notificationToken = req.body.token;
+        user.notificationToken = req.body.token;
 
-       user.save();
+        user.save();
 
         res.json({
             message: "Notification token save",
@@ -49,6 +49,16 @@ exports.register = async (req, res, next) => {
             })
         }
 
+        // // Create user in Firebase Authentication
+        // const firebaseUser = await admin.auth().createUser({
+        //     email: req.body.email,
+        //     password: req.body.password, // Firebase requires a password
+        //     displayName: req.body.name
+        // });
+
+        // // Store Firebase UID in MongoDB
+        // req.body.firebaseUID = firebaseUser.uid;
+
         const user = await User.create(req.body);
 
         res.json({
@@ -65,7 +75,6 @@ exports.register = async (req, res, next) => {
     }
 
 }
-
 
 exports.login = async (req, res, next) => {
 
@@ -109,4 +118,3 @@ exports.login = async (req, res, next) => {
     }
 
 }
-
