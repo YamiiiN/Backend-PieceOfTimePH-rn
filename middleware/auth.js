@@ -57,7 +57,7 @@ const isAuthenticated = async (req, res, next) => {
 
 // AUTHORIZATION MIDDLEWARE
 const authorizeRoles = (...roles) => {
-    console.log(roles)
+    // console.log(roles)
     return (req, res, next) => {
 
         if (!req.user) {
