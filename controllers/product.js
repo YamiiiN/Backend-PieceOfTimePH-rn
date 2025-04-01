@@ -52,58 +52,69 @@ exports.create = async (req, res, next) => {
 
 // UPDATE PRODUCT
 exports.updateProduct = async (req, res, next) => {
-
     try {
-
-        // console.log(req.body);
-        // console.log(req.params);
-        // console.log(req.files);
-
-        const images = req.files;
-
-        // console.log(images);
-
-        req.body.images = [];
-
+        console.log("Update product request received for ID:", req.params.id);
+        
+        // parse existing images if sent as JSON string
+        let existingImagesArray = [];
+        if (req.body.existingImages) {
+            try {
+                existingImagesArray = JSON.parse(req.body.existingImages);
+                delete req.body.existingImages; // remove from body after parsing
+            } catch (err) {
+                console.error("Error parsing existingImages:", err);
+            }
+        }
+        
+        // initialize images array
+        if (!req.body.images) {
+            req.body.images = [];
+        }
+        
+        // add existing images to the body images array
+        if (existingImagesArray.length > 0) {
+            req.body.images = existingImagesArray;
+        }
+        
+        // process new uploaded images
+        const images = req.files || [];
+        console.log("Number of new images received:", images.length);
+        
         for (let i = 0; i < images.length; i++) {
-
-            const data = await cloudinary.v2.uploader.upload(images[i].path);
-
-            console.log(data);
-
-            req.body.images.push({
-
-                public_id: data.public_id,
-
-                url: data.url,
-
-            })
-        };
-
-        // DELETE EMPTY ARRAY KAPAG HINDI NAG UPDATE NG IMAGES
-        if (images.length === 0) {
-            delete req.body.images
+            try {
+                const data = await cloudinary.v2.uploader.upload(images[i].path);
+                
+                req.body.images.push({
+                    public_id: data.public_id,
+                    url: data.url,
+                });
+            } catch (uploadErr) {
+                console.error("Error uploading image to Cloudinary:", uploadErr);
+            }
         }
 
-        const product = await Product.findByIdAndUpdate(req.params.id, req.body);
+        // to return updated document
+        const product = await Product.findByIdAndUpdate(
+            req.params.id, 
+            req.body,
+            { new: true }
+        );
+        
+        console.log("Product updated successfully:", product._id);
 
-        res.json({
+        res.status(200).json({
             message: "Product successfully updated.",
             product: product,
-        })
-
+        });
     } catch (error) {
-
-        console.log(error);
-
-        return res.json({
-            message: 'System error occured.',
+        console.error("Error updating product:", error);
+        
+        return res.status(500).json({
+            message: 'System error occurred while updating product.',
+            error: error.message,
             success: false,
-        })
-
-
+        });
     }
-
 }
 
 
