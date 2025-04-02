@@ -8,17 +8,17 @@ const {
     getReviewsByProduct,
     updateReviewByProduct,
     deleteReviewByUser,
+    checkUserReview,
+    checkCanReview,
 } = require("../controllers/review")
 
 router.post('/create', isAuthenticated, create);
-
-router.get('/allList', isAuthenticated, getAllReviews);
-
-router.get('/byProduct/:productId', isAuthenticated, getReviewsByProduct);
-
+router.get('/allList', getAllReviews);
+router.get('/byProduct/:productId', getReviewsByProduct);
 router.put('/update/:productId/:reviewId', isAuthenticated, updateReviewByProduct);
-
 router.delete("/delete/:productId/:reviewId", isAuthenticated, deleteReviewByUser);
 
+router.get('/check-review/:productId', checkUserReview);
+router.get('/can-review/:productId', isAuthenticated, checkCanReview);
 
 module.exports = router;
