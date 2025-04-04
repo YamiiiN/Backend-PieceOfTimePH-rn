@@ -48,6 +48,11 @@ const userModel = new mongoose.Schema({
         type: String,
         default: 'user'
     },
+
+    pushToken: {
+        type: String,
+        default: null
+    }
 })
 
 // HASH NG PASSWORD
@@ -57,6 +62,11 @@ userModel.pre('save', async function (next) {
     }
 
     this.password = await bcrypt.hash(this.password, 10);
+
+    if (this.isModified('pushToken')) {
+        console.log(`User ${this._id}: Saving pushToken ${this.pushToken}`);
+    }
+    next();
 });
 
 userModel.methods.getJwtToken = function () {

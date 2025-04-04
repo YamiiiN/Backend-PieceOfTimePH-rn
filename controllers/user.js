@@ -123,7 +123,7 @@ exports.login = async (req, res, next) => {
 
 exports.getProfile = async (req, res, next) => {
     try {
-        const user = await User.findById(req.user._id).select("-password"); 
+        const user = await User.findById(req.user._id).select("-password");
 
         if (!user) {
             return res.status(404).json({ message: "User not found." });
@@ -184,3 +184,198 @@ exports.updateProfile = async (req, res, next) => {
         res.status(500).json({ message: "An error occurred while updating the profile." });
     }
 };
+
+
+// exports.updatePushToken = async (req, res) => {
+//     try {
+//         const userId = req.user._id;
+//         const { pushToken } = req.body;
+
+//         console.log('Received request to update push token:', {
+//             userId,
+//             pushToken,
+//             requestBody: req.body
+//         });
+
+//         if (!pushToken) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: 'Push token is required'
+//             });
+//         }
+
+//         // Update user with the new push token
+//         const updatedUser = await User.findByIdAndUpdate(
+//             userId,
+//             { pushToken: pushToken },
+//             { new: true, runValidators: true }
+//         ).select('pushToken');
+
+//         console.log('User updated with push token:', updatedUser);
+
+//         if (!updatedUser) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: 'User not found'
+//             });
+//         }
+
+//         return res.status(200).json({
+//             success: true,
+//             message: 'Push token updated successfully',
+//             user: {
+//                 _id: updatedUser._id,
+//                 pushToken: updatedUser.pushToken
+//             }
+//         });
+//     } catch (error) {
+//         console.error('Error updating push token:', error);
+//         return res.status(500).json({
+//             success: false,
+//             message: 'Failed to update push token',
+//             error: error.message
+//         });
+//     }
+// };
+exports.updatePushToken = async (req, res) => {
+    try {
+        const userId = req.user.id || req.user._id; // Handle both formats
+        const { pushToken } = req.body;
+
+        console.log('Update Push Token Request:', {
+            userId,
+            pushToken,
+            user: req.user
+        });
+
+        if (!pushToken) {
+            return res.status(400).json({
+                success: false,
+                message: 'Push token is required'
+            });
+        }
+
+        // First, check if the user exists
+        const userExists = await User.findById(userId);
+        if (!userExists) {
+            console.error(`User not found with ID: ${userId}`);
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        console.log('User found:', {
+            id: userExists._id,
+            hasPushTokenField: 'pushToken' in userExists._doc,
+            currentPushToken: userExists.pushToken
+        });
+
+        // Try direct update approach
+        const result = await User.updateOne(
+            { _id: userId },
+            { $set: { pushToken: pushToken } }
+        );
+
+        console.log('Update result:', result);
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found during update'
+            });
+        }
+
+        if (result.modifiedCount === 0) {
+            console.log('No changes made - token might be the same');
+        }
+
+        // Verify the update worked
+        const updatedUser = await User.findById(userId);
+        
+        return res.status(200).json({
+            success: true,
+            message: 'Push token update attempt completed',
+            updateResult: result,
+            tokenVerification: {
+                tokenMatches: updatedUser.pushToken === pushToken,
+                currentToken: updatedUser.pushToken
+            }
+        });
+    } catch (error) {
+        console.error('Error in updatePushToken:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to update push token',
+            error: error.message,
+            stack: error.stack
+        });
+    }
+};
+
+// exports.checkPushToken = async (req, res) => {
+//     try {
+//         const userId = req.user._id;
+        
+//         const user = await User.findById(userId).select('pushToken');
+        
+//         if (!user) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: 'User not found'
+//             });
+//         }
+        
+//         return res.status(200).json({
+//             success: true,
+//             hasPushToken: !!user.pushToken,
+//             pushToken: user.pushToken || 'Not set'
+//         });
+//     } catch (error) {
+//         console.error('Error checking push token:', error);
+//         return res.status(500).json({
+//             success: false,
+//             message: 'Failed to check push token',
+//             error: error.message
+//         });
+//     }
+// };
+
+//     try {
+//         const userId = req.user._id;
+//         const { pushToken } = req.body;
+
+//         if (!pushToken) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: 'Push token is required'
+//             });
+//         }
+
+//         // Update user with the new push token
+//         const updatedUser = await User.findByIdAndUpdate(
+//             userId,
+//             { pushToken: pushToken },
+//             { new: true }
+//         );
+
+//         if (!updatedUser) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: 'User not found'
+//             });
+//         }
+
+//         return res.status(200).json({
+//             success: true,
+//             message: 'Push token updated successfully'
+//         });
+//     } catch (error) {
+//         console.error('Error updating push token:', error);
+//         return res.status(500).json({
+//             success: false,
+//             message: 'Failed to update push token',
+//             error: error.message
+//         });
+//     }
+// };

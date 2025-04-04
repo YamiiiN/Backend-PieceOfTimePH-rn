@@ -8,7 +8,9 @@ const {
     register,
     login,
     getProfile,
-    updateProfile
+    updateProfile,
+    updatePushToken,
+    // checkPushToken  
 } = require('../controllers/user');
 
 router.post('/register', upload.array('images'), register)
@@ -20,5 +22,9 @@ router.post('/save/token', isAuthenticatedV2, saveToken)
 router.get('/profile', isAuthenticated, getProfile);
 
 router.put('/profile/update', upload.array('images'), isAuthenticated, updateProfile);
+
+router.post('/update-push-token', isAuthenticated, updatePushToken);
+
+// router.get('/check-push-token', isAuthenticated, checkPushToken);
 
 module.exports = router;
