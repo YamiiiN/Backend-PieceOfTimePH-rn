@@ -1,51 +1,33 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User'); // Adjust path as needed
 const { isAuthenticated, isAuthenticatedV2, authorizeRoles } = require('../middleware/auth');
 
-// Choose which auth middleware to use based on your needs
-const auth = isAuthenticated;
+const {
+    registerToken,
+    createNotification, 
+    getUserNotifications,
+    markAllAsRead,
+    markAsRead,
+    deleteNotification,
+    getUnreadCount
 
-// Route to register/update push token
-router.post('/register-push-token', auth, async (req, res) => {
-    try {
-        const { pushToken } = req.body;
+} = require('../controllers/notification')
 
-        if (!pushToken) {
-            return res.status(400).json({
-                success: false,
-                message: 'Push token is required'
-            });
-        }
 
-        // Update user's push token
-        const user = await User.findByIdAndUpdate(
-            req.user._id, // Make sure this matches how your user ID is stored
-            { pushToken },
-            { new: true }
-        );
+router.post('/register-push-token', isAuthenticated, registerToken);
 
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'User not found'
-            });
-        }
+router.post('/create', isAuthenticated, createNotification);
 
-        return res.status(200).json({
-            success: true,
-            message: 'Push token registered successfully'
-        });
+router.get('/user-notifications', isAuthenticated, getUserNotifications);
 
-    } catch (error) {
-        console.error('Error registering push token:', error);
-        return res.status(500).json({
-            success: false,
-            message: 'Server error',
-            error: error.message
-        });
-    }
-});
+router.put('/mark-read/:id', isAuthenticated, markAsRead);
+
+router.put('/mark-all-read', isAuthenticated, markAllAsRead);
+
+router.delete('/:id', isAuthenticated, deleteNotification);
+
+router.get('/unread-count', isAuthenticated, getUnreadCount);
+
 
 
 
