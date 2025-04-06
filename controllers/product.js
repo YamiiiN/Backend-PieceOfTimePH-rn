@@ -241,31 +241,3 @@ exports.getOneProductPerCategory = async (req, res, next) => {
     }
 };
 
-
-// BULK DELETE
-// exports.bulkDelete = async (req, res, next) => {
-//     try {
-
-//         // console.log(req.body.productIds);
-
-//         await Product.deleteMany({
-//             _id: {
-//                 $in: req.body.productIds, //$in array pang store ng iddedelete na product id
-//             }
-//         });
-
-//         res.json({
-//             message: "Products deleted successfully!",
-//         })
-
-//     } catch (error) {
-
-//         console.log(error);
-
-//         return res.json({
-//             message: 'System error occured.',
-//             success: false,
-//         })
-
-//     }
-// }

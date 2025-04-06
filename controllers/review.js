@@ -113,7 +113,6 @@ exports.deleteReviewByUser = async (req, res, next) => {
     }
 };
 
-// Check if user has already reviewed a product
 exports.checkUserReview = async (req, res, next) => {
     try {
         const { productId } = req.params;

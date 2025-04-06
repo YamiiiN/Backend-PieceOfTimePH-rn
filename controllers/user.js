@@ -185,61 +185,9 @@ exports.updateProfile = async (req, res, next) => {
     }
 };
 
-
-// exports.updatePushToken = async (req, res) => {
-//     try {
-//         const userId = req.user._id;
-//         const { pushToken } = req.body;
-
-//         console.log('Received request to update push token:', {
-//             userId,
-//             pushToken,
-//             requestBody: req.body
-//         });
-
-//         if (!pushToken) {
-//             return res.status(400).json({
-//                 success: false,
-//                 message: 'Push token is required'
-//             });
-//         }
-
-//         // Update user with the new push token
-//         const updatedUser = await User.findByIdAndUpdate(
-//             userId,
-//             { pushToken: pushToken },
-//             { new: true, runValidators: true }
-//         ).select('pushToken');
-
-//         console.log('User updated with push token:', updatedUser);
-
-//         if (!updatedUser) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: 'User not found'
-//             });
-//         }
-
-//         return res.status(200).json({
-//             success: true,
-//             message: 'Push token updated successfully',
-//             user: {
-//                 _id: updatedUser._id,
-//                 pushToken: updatedUser.pushToken
-//             }
-//         });
-//     } catch (error) {
-//         console.error('Error updating push token:', error);
-//         return res.status(500).json({
-//             success: false,
-//             message: 'Failed to update push token',
-//             error: error.message
-//         });
-//     }
-// };
 exports.updatePushToken = async (req, res) => {
     try {
-        const userId = req.user.id || req.user._id; // Handle both formats
+        const userId = req.user.id || req.user._id; 
         const { pushToken } = req.body;
 
         console.log('Update Push Token Request:', {
@@ -312,70 +260,3 @@ exports.updatePushToken = async (req, res) => {
         });
     }
 };
-
-// exports.checkPushToken = async (req, res) => {
-//     try {
-//         const userId = req.user._id;
-        
-//         const user = await User.findById(userId).select('pushToken');
-        
-//         if (!user) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: 'User not found'
-//             });
-//         }
-        
-//         return res.status(200).json({
-//             success: true,
-//             hasPushToken: !!user.pushToken,
-//             pushToken: user.pushToken || 'Not set'
-//         });
-//     } catch (error) {
-//         console.error('Error checking push token:', error);
-//         return res.status(500).json({
-//             success: false,
-//             message: 'Failed to check push token',
-//             error: error.message
-//         });
-//     }
-// };
-
-//     try {
-//         const userId = req.user._id;
-//         const { pushToken } = req.body;
-
-//         if (!pushToken) {
-//             return res.status(400).json({
-//                 success: false,
-//                 message: 'Push token is required'
-//             });
-//         }
-
-//         // Update user with the new push token
-//         const updatedUser = await User.findByIdAndUpdate(
-//             userId,
-//             { pushToken: pushToken },
-//             { new: true }
-//         );
-
-//         if (!updatedUser) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: 'User not found'
-//             });
-//         }
-
-//         return res.status(200).json({
-//             success: true,
-//             message: 'Push token updated successfully'
-//         });
-//     } catch (error) {
-//         console.error('Error updating push token:', error);
-//         return res.status(500).json({
-//             success: false,
-//             message: 'Failed to update push token',
-//             error: error.message
-//         });
-//     }
-// };
