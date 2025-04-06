@@ -1,9 +1,9 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
-const User = require('../models/User'); 
+const User = require('../models/User');
 const notificationService = require('../services/notificationService');
 const mongoose = require('mongoose');
-const Notification = require('../models/Notification'); 
+const Notification = require('../models/Notification');
 
 exports.create = async (req, res, next) => {
     try {
@@ -31,7 +31,7 @@ exports.create = async (req, res, next) => {
 };
 exports.getUserOrders = async (req, res) => {
     try {
-        const userId = req.user._id; 
+        const userId = req.user._id;
         const orders = await Order.find({ user: userId }).populate({
             path: 'order_items.product',
             select: 'name sell_price images',
@@ -143,19 +143,19 @@ exports.updateOrder = async (req, res) => {
     try {
         const { id } = req.params;
         const { status } = req.body;
-  
+
         const order = await Order.findById(id);
-  
+
         if (!order) {
             return res.status(404).json({
                 success: false,
                 message: 'Order not found'
             });
         }
-  
+
         order.status = status;
         await order.save();
-  
+
         const updatedOrder = await Order.findById(id)
             .populate({
                 path: 'order_items.product',
@@ -165,7 +165,7 @@ exports.updateOrder = async (req, res) => {
                 path: 'user',
                 select: 'first_name last_name email images pushToken'
             });
-  
+
         const notification = new Notification({
             user: updatedOrder.user._id,
             title: 'Order Status Update',
@@ -178,9 +178,9 @@ exports.updateOrder = async (req, res) => {
                 updatedAt: new Date().toISOString()
             }
         });
-  
+
         await notification.save();
-  
+
         if (updatedOrder.user && updatedOrder.user.pushToken) {
             const notificationResult = await notificationService.sendNotification(
                 [updatedOrder.user.pushToken],
@@ -192,16 +192,16 @@ exports.updateOrder = async (req, res) => {
                     updatedAt: new Date().toISOString()
                 }
             );
-  
+
             console.log('Push notification sent:', notificationResult);
         }
-  
+
         res.status(200).json({
             success: true,
             message: 'Order status updated successfully',
             order: updatedOrder
         });
-  
+
     } catch (error) {
         console.error(error);
         res.status(500).json({
@@ -210,4 +210,4 @@ exports.updateOrder = async (req, res) => {
             error: error.message
         });
     }
-  };
+};
