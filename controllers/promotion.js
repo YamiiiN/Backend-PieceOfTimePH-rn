@@ -24,7 +24,7 @@ exports.createPromotion = async (req, res) => {
       const notification = new Notification({
         user: user._id, 
         title: 'New Promotion',
-        message: `Get ${product.name} with ${promotion.discountPercentage}% off. Grab the item now!`,
+        message: `Get ${product.name}, ${product._id} with ${promotion.discountPercentage}% off. Grab the yours now! `,
         type: 'promo',
         data: {
           promotionId: promotion._id,
@@ -44,7 +44,7 @@ exports.createPromotion = async (req, res) => {
       await notificationService.sendNotification(
         pushTokens,
         'New Promotion',
-        `Get ${product.name} with ${promotion.discountPercentage}% off. Grab the item now!`,
+        `Get ${product.name}, ${product._id} with ${promotion.discountPercentage}% off. Grab the item now!`,
         { 
           promotionId: promotion._id.toString(),
           productId: product._id.toString()
