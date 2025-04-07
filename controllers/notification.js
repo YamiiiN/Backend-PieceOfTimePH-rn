@@ -7,7 +7,7 @@ const { Expo } = require('expo-server-sdk');
 let expo = new Expo();
 
 // Register push token
-exports.registerToken = async(req, res, next) => {
+exports.registerToken = async (req, res, next) => {
     try {
         const { pushToken } = req.body;
 
@@ -47,7 +47,7 @@ exports.registerToken = async(req, res, next) => {
 }
 
 // Create a new notification
-exports.createNotification = async(req, res, next) => {
+exports.createNotification = async (req, res, next) => {
     try {
         const { userId, title, message, type } = req.body;
 
@@ -91,7 +91,7 @@ exports.createNotification = async(req, res, next) => {
                     sound: 'default',
                     title: title,
                     body: message,
-                    data: { 
+                    data: {
                         type: type || 'general',
                         notificationId: newNotification._id.toString()
                     }
@@ -126,7 +126,7 @@ exports.createNotification = async(req, res, next) => {
 }
 
 // Get all notifications for a user
-exports.getUserNotifications = async(req, res, next) => {
+exports.getUserNotifications = async (req, res, next) => {
     try {
         const userId = req.user._id;
 
@@ -148,7 +148,7 @@ exports.getUserNotifications = async(req, res, next) => {
 }
 
 // Mark a notification as read
-exports.markAsRead = async(req, res, next) => {
+exports.markAsRead = async (req, res, next) => {
     try {
         const notificationId = req.params.id;
         const userId = req.user._id;
@@ -184,7 +184,7 @@ exports.markAsRead = async(req, res, next) => {
 }
 
 // Mark all notifications as read
-exports.markAllAsRead = async(req, res, next) => {
+exports.markAllAsRead = async (req, res, next) => {
     try {
         const userId = req.user._id;
 
@@ -211,7 +211,7 @@ exports.markAllAsRead = async(req, res, next) => {
 }
 
 // Delete a notification
-exports.deleteNotification = async(req, res, next) => {
+exports.deleteNotification = async (req, res, next) => {
     try {
         const notificationId = req.params.id;
         const userId = req.user._id;
@@ -245,7 +245,7 @@ exports.deleteNotification = async(req, res, next) => {
 }
 
 // Get unread notification count
-exports.getUnreadCount = async(req, res, next) => {
+exports.getUnreadCount = async (req, res, next) => {
     try {
         const userId = req.user._id;
 

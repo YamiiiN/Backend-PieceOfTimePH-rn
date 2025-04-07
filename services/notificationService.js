@@ -8,22 +8,20 @@ class NotificationService {
   }
 
   async sendNotification(pushTokens, title, body, data = {}) {
-    // Validate input
+
     if (!Array.isArray(pushTokens) || pushTokens.length === 0) {
       return { success: false, message: 'No push tokens provided' };
     }
 
     let messages = [];
 
-    // Create messages for each token
     for (let pushToken of pushTokens) {
-      // Validate token format
       if (!Expo.isExpoPushToken(pushToken)) {
         console.error(`Push token ${pushToken} is not a valid Expo push token`);
         continue;
       }
 
-      // Construct a message
+      
       messages.push({
         to: pushToken,
         sound: 'default',
@@ -33,16 +31,11 @@ class NotificationService {
       });
     }
 
-    // No valid tokens
-    if (messages.length === 0) {
-      return { success: false, message: 'No valid push tokens' };
-    }
 
     let chunks = this.expo.chunkPushNotifications(messages);
     let tickets = [];
 
     try {
-      // Send notifications in chunks
       for (let chunk of chunks) {
         try {
           let ticketChunk = await this.expo.sendPushNotificationsAsync(chunk);
@@ -52,7 +45,6 @@ class NotificationService {
         }
       }
       
-      // Process receipts asynchronously
       this._processReceipts(tickets);
       
       return { 
@@ -80,7 +72,6 @@ class NotificationService {
 
     let receiptIdChunks = this.expo.chunkPushNotificationReceiptIds(receiptIds);
     
-    // Check receipts after a delay to allow time for processing
     setTimeout(async () => {
       for (let chunk of receiptIdChunks) {
         try {
@@ -97,9 +88,7 @@ class NotificationService {
               if (details && details.error) {
                 console.error(`Error code: ${details.error}`);
                 
-                // Handle specific error cases
                 if (details.error === 'DeviceNotRegistered') {
-                  // TODO: You should implement logic to remove this token from your database
                   console.log(`Token should be removed from database: related to receipt ${receiptId}`);
                 }
               }
@@ -109,7 +98,7 @@ class NotificationService {
           console.error('Error checking push notification receipts:', error);
         }
       }
-    }, 5000); // Check after 5 seconds
+    }, 5000); 
   }
 }
 

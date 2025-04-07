@@ -21,7 +21,8 @@ router.post('/save/token', isAuthenticatedV2, saveToken)
 
 router.get('/profile', isAuthenticated, getProfile);
 
-router.put('/profile/update', upload.array('images'), isAuthenticated, updateProfile);
+// router.put('/profile/update', upload.array('images'), isAuthenticated, updateProfile);
+router.put('/profile/update', upload.single('file'), isAuthenticated, updateProfile);
 
 router.post('/update-push-token', isAuthenticated, updatePushToken);
 
